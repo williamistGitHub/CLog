@@ -34,6 +34,7 @@ typedef enum {
 } clog_log_level_e;
 
 void clog_set_log_level(clog_log_level_e level);
+void clog_set_log_file(const char* filename);
 
 #ifdef __GNUC__
 __attribute__((format(printf, 2, 3)));
