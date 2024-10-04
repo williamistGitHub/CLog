@@ -20,7 +20,8 @@ set_target_properties(
 # the fact i have to specify command line arguments here (and compiler specific
 # ones at that!), defeating the point of using cmake at all, annoys me.
 if(MSVC)
-  target_compile_options(clog PRIVATE /W4 /WX)
+    target_compile_options(clog PRIVATE /W4 /WX)
+    target_compile_definitions(clog PRIVATE _CRT_SECURE_NO_WARNINGS)
 else()
-  target_compile_options(clog PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(clog PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()

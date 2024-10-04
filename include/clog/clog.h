@@ -24,11 +24,22 @@
 #ifndef CLOG_H
 #define CLOG_H
 
+#include <stdarg.h>
+
 typedef enum {
     CLOG_LEVEL_DEBUG = 0,
     CLOG_LEVEL_INFO = 1,
     CLOG_LEVEL_WARN = 2,
     CLOG_LEVEL_ERROR = 3
 } clog_log_level_e;
+
+void clog_set_log_level(clog_log_level_e level);
+
+#ifdef __GNUC__
+__attribute__((format(printf, 2, 3)));
+#endif
+void clog_log(clog_log_level_e level, const char* fmt, ...);
+
+void clog_logv(clog_log_level_e level, const char* fmt, va_list args);
 
 #endif
