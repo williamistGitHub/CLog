@@ -25,3 +25,10 @@ if(MSVC)
 else()
     target_compile_options(clog PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()
+
+# examples
+option(BUILD_EXAMPLES "Build CLog examples" OFF)
+
+if(BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif()
