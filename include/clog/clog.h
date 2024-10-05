@@ -37,6 +37,10 @@ typedef enum {
     CLOG_LEVEL_ERROR = 3
 } clog_log_level_e;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief Sets the current log level. Any messages "lower" than this will not be logged.
  * 
@@ -71,5 +75,9 @@ __attribute__((format(printf, 2, 3)))
  * @param args Arguments to the format string.
  */
 void clog_logv(clog_log_level_e level, const char* fmt, va_list args);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
