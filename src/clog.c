@@ -31,15 +31,6 @@
 /* if your string is longer than 1024, you have other problems. */
 #define MAX_FMT_LEN 1024
 
-#define LOG_LEVEL_PREFIX "\x1b[0;37m["
-
-#define LOG_LEVEL_DEBUG "\x1b[1;34mDEBUG"
-#define LOG_LEVEL_INFO  "\x1b[1;32mINFO "
-#define LOG_LEVEL_WARN  "\x1b[1;33mWARN "
-#define LOG_LEVEL_ERROR "\x1b[1;31mERROR"
-
-#define LOG_LEVEL_SUFFIX "\x1b[0;37m] \x1b[0m"
-
 #define cstrlen(str) (sizeof(str) / sizeof(str[0]))
 
 static clog_log_level_e g_log_level = CLOG_LEVEL_DEBUG;
@@ -88,46 +79,36 @@ void clog_logv(clog_log_level_e level, const char* fmt, va_list args) {
         return;
     }
 
-    /* build final string from level and fmt */
-    size_t fmtlen = strnlen_s(fmt, MAX_FMT_LEN); 
-
-    char ansifmt[cstrlen(LOG_LEVEL_PREFIX) + cstrlen(LOG_LEVEL_DEBUG) +
-                    cstrlen(LOG_LEVEL_SUFFIX) + MAX_FMT_LEN];
+    /* TODO: make these array decls less cringe */
+    char ansifmt[cstrlen("\x1b[0;37m[\x1b[0;37m     \x1b[0;37m] \x1b[0m") + MAX_FMT_LEN];
     char cleanfmt[cstrlen("[     ] ") + MAX_FMT_LEN];
 
     memset(ansifmt, 0, sizeof(ansifmt));
     memset(cleanfmt, 0, sizeof(cleanfmt));
 
-    strncat(ansifmt, LOG_LEVEL_PREFIX, sizeof(LOG_LEVEL_PREFIX));
-    strncat(cleanfmt, "[", 1);
-    
+    const char* levelansi = NULL;
+    const char* levelstr = NULL;
     switch (level) {
         case CLOG_LEVEL_DEBUG:
-            strncat(ansifmt, LOG_LEVEL_DEBUG, sizeof(LOG_LEVEL_DEBUG));
-            strncat(cleanfmt, "DEBUG", 5);
+            levelansi = "\x1b[1;34m";
+            levelstr = "DEBUG";
             break;
         case CLOG_LEVEL_INFO:
-            strncat(ansifmt, LOG_LEVEL_INFO, sizeof(LOG_LEVEL_INFO));
-            strncat(cleanfmt, "INFO ", 5);
+            levelansi = "\x1b[1;32m";
+            levelstr = "INFO ";
             break;
         case CLOG_LEVEL_WARN:
-            strncat(ansifmt, LOG_LEVEL_WARN, sizeof(LOG_LEVEL_WARN));
-            strncat(cleanfmt, "WARN ", 5);
+            levelansi = "\x1b[1;33m";
+            levelstr = "WARN ";
             break;
         case CLOG_LEVEL_ERROR:
-            strncat(ansifmt, LOG_LEVEL_ERROR, sizeof(LOG_LEVEL_ERROR));
-            strncat(cleanfmt, "ERROR", 5);
+            levelansi = "\x1b[1;31m";
+            levelstr = "ERROR";
             break;
     }
 
-    strncat(ansifmt, LOG_LEVEL_SUFFIX, sizeof(LOG_LEVEL_SUFFIX));
-    strncat(cleanfmt, "] ", 2);
-
-    strncat(ansifmt, fmt, fmtlen);
-    strncat(cleanfmt, fmt, fmtlen);
-
-    strncat(ansifmt, "\n", 1);
-    strncat(cleanfmt, "\n", 1);
+    sprintf(ansifmt, "\x1b[0;37m[%s%s\x1b[0;37m] \x1b[0m%s\n", levelansi, levelstr, fmt);
+    sprintf(cleanfmt, "[%s] %s\n", levelstr, fmt);
 
     if (level == CLOG_LEVEL_ERROR) {
         vfprintf(stderr, ansifmt, args);
