@@ -50,9 +50,6 @@ void clog_set_log_level(clog_log_level_e level);
  */
 void clog_set_log_file(const char* filename);
 
-#ifdef __GNUC__
-__attribute__((format(printf, 2, 3)));
-#endif
 /**
  * @brief Log, using varargs.
  * 
@@ -60,7 +57,11 @@ __attribute__((format(printf, 2, 3)));
  * @param fmt `printf`-style format string to log. `\\n` is appended automatically.
  * @param ... Arguments to the format string.
  */
-void clog_log(clog_log_level_e level, const char* fmt, ...);
+void clog_log(clog_log_level_e level, const char* fmt, ...)
+#ifdef __GNUC__
+__attribute__((format(printf, 2, 3)))
+#endif
+;
 
 /**
  * @brief Log, using `va_list`.
