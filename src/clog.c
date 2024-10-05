@@ -79,26 +79,30 @@ void clog_log(clog_log_level_e level, const char* fmt, ...) {
     va_end(ap);
 }
 
-void clog_logv(clog_log_level_e level, const char* fmt, va_list args) {
-    if (level < g_log_level) {
-        return;
-    }
-    
-    /* format timestamp */
-    time_t now = time(NULL);
-    struct tm* t = localtime(&now);
+void clog_logv(clog_log_level_e level, const char* fmt, va_list args) {    
+    time_t now;
+    struct tm* t;
     char timestamp[cstrlen("00:00:00")];
-    sprintf(timestamp, "%02d:%02d:%02d", t->tm_hour, t->tm_min, t->tm_sec);
 
     /* TODO: make these array decls less cringe */
     char ansifmt[cstrlen("\x1b[0;37m[\x1b[0;37m     \x1b[0;37m] [00:00:00] \x1b[0m") + MAX_FMT_LEN];
     char cleanfmt[cstrlen("[     ] [00:00:00] ") + MAX_FMT_LEN];
 
+    const char* levelansi;
+    const char* levelstr;
+
+    if (level < g_log_level) {
+        return;
+    }
+
+    /* format timestamp */
+    now = time(NULL);
+    t = localtime(&now);
+    sprintf(timestamp, "%02d:%02d:%02d", t->tm_hour, t->tm_min, t->tm_sec);
+
     memset(ansifmt, 0, sizeof(ansifmt));
     memset(cleanfmt, 0, sizeof(cleanfmt));
 
-    const char* levelansi = NULL;
-    const char* levelstr = NULL;
     switch (level) {
         case CLOG_LEVEL_DEBUG:
             levelansi = "\x1b[1;34m";
