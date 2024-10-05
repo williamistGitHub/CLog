@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 project(
     CLog
-    VERSION 0.1.0
+    VERSION 0.1.1
     DESCRIPTION "Simple C89 logging library."
     LANGUAGES C
 )
