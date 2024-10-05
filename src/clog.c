@@ -54,6 +54,10 @@ static void clog_close_log_file(void) {
 void clog_set_log_file(const char* filename) {
     clog_close_log_file();
 
+    if (filename == NULL) {
+        return;
+    }
+
     g_log_file = fopen(filename, "w");
 
     if (g_log_file == NULL) {
