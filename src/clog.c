@@ -27,6 +27,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 /* if your string is longer than 1024, you have other problems. */
 #define MAX_FMT_LEN 1024
@@ -78,10 +79,16 @@ void clog_logv(clog_log_level_e level, const char* fmt, va_list args) {
     if (level < g_log_level) {
         return;
     }
+    
+    /* format timestamp */
+    time_t now = time(NULL);
+    struct tm* t = localtime(&now);
+    char timestamp[cstrlen("00:00:00")];
+    sprintf(timestamp, "%02d:%02d:%02d", t->tm_hour, t->tm_min, t->tm_sec);
 
     /* TODO: make these array decls less cringe */
-    char ansifmt[cstrlen("\x1b[0;37m[\x1b[0;37m     \x1b[0;37m] \x1b[0m") + MAX_FMT_LEN];
-    char cleanfmt[cstrlen("[     ] ") + MAX_FMT_LEN];
+    char ansifmt[cstrlen("\x1b[0;37m[\x1b[0;37m     \x1b[0;37m] [00:00:00] \x1b[0m") + MAX_FMT_LEN];
+    char cleanfmt[cstrlen("[     ] [00:00:00] ") + MAX_FMT_LEN];
 
     memset(ansifmt, 0, sizeof(ansifmt));
     memset(cleanfmt, 0, sizeof(cleanfmt));
@@ -107,8 +114,8 @@ void clog_logv(clog_log_level_e level, const char* fmt, va_list args) {
             break;
     }
 
-    sprintf(ansifmt, "\x1b[0;37m[%s%s\x1b[0;37m] \x1b[0m%s\n", levelansi, levelstr, fmt);
-    sprintf(cleanfmt, "[%s] %s\n", levelstr, fmt);
+    sprintf(ansifmt, "\x1b[0;37m[%s%s\x1b[0;37m] [%s] \x1b[0m%s\n", levelansi, levelstr, timestamp, fmt);
+    sprintf(cleanfmt, "[%s] [%s] %s\n", levelstr, timestamp, fmt);
 
     if (level == CLOG_LEVEL_ERROR) {
         vfprintf(stderr, ansifmt, args);
