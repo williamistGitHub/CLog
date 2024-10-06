@@ -81,3 +81,4 @@ void clog_logv(clog_log_level_e level, const char* fmt, va_list args);
 #endif
 
 #endif
+
