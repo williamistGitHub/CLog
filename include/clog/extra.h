@@ -36,7 +36,7 @@ extern "C" {
  *
  * @param EX The condition to check
  */
-#define clog_assert(EX) (void)((EX) || (clog_log(CLOG_LEVEL_ERROR, "%s at %s, line %d", #EX, __FILE__, __LINE__), exit(1), 0)) /* POSIX says that assert should exit */
+#define clog_assert(EX) (void)((EX) || (clog_log(CLOG_LEVEL_ERROR, "ASSERT FAILED: %s at %s, line %d", #EX, __FILE__, __LINE__), exit(1), 0)) /* POSIX says that assert should exit */
 
 #ifdef __cplusplus
 }
