@@ -1,24 +1,42 @@
+/* 
+ * This file is a part of CLog.
+ *
+ * (C) 2024 williamist
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty.  In no event will the authors be held liable for any damages
+ * arising from the use of this software.
+ *
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+
+ * 1. The origin of this software must not be misrepresented; you must not
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 3. This notice may not be removed or altered from any source distribution.
+ * 
+ */
+
 #ifndef CLOG_EXTRA_H
 #define CLOG_EXTRA_H
 
 #include <stdlib.h>
-#include "clog.h"
+#include "clog/clog.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-void __clog_assert(const char *msg, const char *file, int line) {
-    clog_log(CLOG_LEVEL_ERROR, "%s at %s, line %d", msg, file, line);
-    exit(1); // POSIX says that assert should exit
-}
 
 /**
  * @brief A standin for the regular C assert macro
  *
  * @param EX The condition to check
  */
-#define clog_assert(EX) (void)((EX) || ((__clog_assert(#EX, __FILE__, __LINE__)), 0))
+#define clog_assert(EX) (void)((EX) || (clog_log(CLOG_LEVEL_ERROR, "%s at %s, line %d", #EX, __FILE__, __LINE__), exit(1), 0)) /* POSIX says that assert should exit */
 
 #ifdef __cplusplus
 }
