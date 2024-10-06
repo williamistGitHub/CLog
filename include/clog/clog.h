@@ -34,7 +34,8 @@ typedef enum {
     CLOG_LEVEL_DEBUG = 0,
     CLOG_LEVEL_INFO = 1,
     CLOG_LEVEL_WARN = 2,
-    CLOG_LEVEL_ERROR = 3
+    CLOG_LEVEL_ERROR = 3,
+    CLOG_LEVEL_ASSERT = 4
 } clog_log_level_e;
 
 #ifdef __cplusplus
@@ -76,8 +77,16 @@ __attribute__((format(printf, 2, 3)))
  */
 void clog_logv(clog_log_level_e level, const char* fmt, va_list args);
 
+/**
+ * @brief A standin for the regular C assert macro
+ *
+ * @param EX The condition to check
+ */
+#define clog_assert(EX) (void)((EX) || (clog_log(CLOG_LEVEL_ASSERT, "%s at %s, line %d", #EX, __FILE__, __LINE__), 0))
+
 #ifdef __cplusplus
 }
 #endif
 
 #endif
+
