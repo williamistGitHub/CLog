@@ -120,10 +120,6 @@ void clog_logv(clog_log_level_e level, const char* fmt, va_list args) {
             levelansi = "\x1b[1;31m";
             levelstr = "ERROR";
             break;
-        case CLOG_LEVEL_ASSERT:
-            levelansi = "\x1b[1;35m";
-            levelstr = "ASSERT FAILED";
-            break;
     }
 
     sprintf(ansifmt, "\x1b[0;37m[%s%s\x1b[0;37m] [%s] \x1b[0m%s\n", levelansi, levelstr, timestamp, fmt);
@@ -133,10 +129,6 @@ void clog_logv(clog_log_level_e level, const char* fmt, va_list args) {
         vfprintf(stderr, ansifmt, args);
     } else {
         vprintf(ansifmt, args);
-    }
-
-    if (level == CLOG_LEVEL_ASSERT) {
-        exit(1);
     }
 
     if (g_log_file != NULL) {
