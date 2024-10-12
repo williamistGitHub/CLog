@@ -10,9 +10,9 @@
 int main() {
     /* Initialize CLog. */
     clog_set_log_level(CLOG_LEVEL_INFO);
-    clog_set_append_newline(false);
+    clog_set_append_newline(0); /* False */
 
-    /* Some example logs: */
+    /* An example log: */
     clog_log(CLOG_LEVEL_INFO, "Newline added manually!\n");
 
     return 0;

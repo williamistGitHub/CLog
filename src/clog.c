@@ -44,7 +44,7 @@ void clog_set_log_level(clog_log_level_e level) {
     g_log_level = level;
 }
 
-void clog_set_append_newline(bool append) {
+void clog_set_append_newline(int append) {
     g_append_newline = append;
 }
 
