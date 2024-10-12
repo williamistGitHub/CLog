@@ -25,6 +25,7 @@
 #define CLOG_H
 
 #include <stdarg.h>
+#include <stdbool.h>
 
 /**
  * @brief Log levels supported by CLog.
@@ -48,6 +49,12 @@ extern "C" {
  */
 void clog_set_log_level(clog_log_level_e level);
 /**
+ * @brief Sets whether a \n newline should automatically be appended to all logs. Defaults to true
+ *
+ * @param append Should we append \n?
+ */
+void clog_set_append_newline(bool append);
+/**
  * @brief Sets the current log file. Messages will be logged here as well if it is not null.
  * 
  * @param filename New log filename, `NULL` is accepted and means no log file.
@@ -58,7 +65,7 @@ void clog_set_log_file(const char* filename);
  * @brief Log, using varargs.
  * 
  * @param level Log level to use.
- * @param fmt `printf`-style format string to log. `\\n` is appended automatically.
+ * @param fmt `printf`-style format string to log. `\\n` is appended depending on clog_set_append_newline().
  * @param ... Arguments to the format string.
  */
 void clog_log(clog_log_level_e level, const char* fmt, ...)

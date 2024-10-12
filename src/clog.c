@@ -24,6 +24,7 @@
 #include "clog/clog.h"
 
 #include <stdarg.h>
+#include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -35,11 +36,16 @@
 #define cstrlen(str) (sizeof(str) / sizeof(str[0]))
 
 static clog_log_level_e g_log_level = CLOG_LEVEL_DEBUG;
+static bool g_append_newline = true;
 static FILE* g_log_file = NULL;
 static int g_has_registered_atexit = 0;
 
 void clog_set_log_level(clog_log_level_e level) {
     g_log_level = level;
+}
+
+void clog_set_append_newline(bool append) {
+    g_append_newline = append;
 }
 
 static void clog_close_log_file(void) {
@@ -122,8 +128,14 @@ void clog_logv(clog_log_level_e level, const char* fmt, va_list args) {
             break;
     }
 
-    sprintf(ansifmt, "\x1b[0;37m[%s%s\x1b[0;37m] [%s] \x1b[0m%s\n", levelansi, levelstr, timestamp, fmt);
-    sprintf(cleanfmt, "[%s] [%s] %s\n", levelstr, timestamp, fmt);
+    if (g_append_newline) {
+        sprintf(ansifmt, "\x1b[0;37m[%s%s\x1b[0;37m] [%s] \x1b[0m%s\n", levelansi, levelstr, timestamp, fmt);
+        sprintf(cleanfmt, "[%s] [%s] %s\n", levelstr, timestamp, fmt);
+    } else {
+        sprintf(ansifmt, "\x1b[0;37m[%s%s\x1b[0;37m] [%s] \x1b[0m%s", levelansi, levelstr, timestamp, fmt);
+        sprintf(cleanfmt, "[%s] [%s] %s", levelstr, timestamp, fmt);
+
+    }
 
     if (level == CLOG_LEVEL_ERROR) {
         vfprintf(stderr, ansifmt, args);
