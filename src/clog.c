@@ -24,7 +24,6 @@
 #include "clog/clog.h"
 
 #include <stdarg.h>
-#include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -36,7 +35,7 @@
 #define cstrlen(str) (sizeof(str) / sizeof(str[0]))
 
 static clog_log_level_e g_log_level = CLOG_LEVEL_DEBUG;
-static int g_append_newline = true;
+static int g_append_newline = 1;
 static FILE* g_log_file = NULL;
 static int g_has_registered_atexit = 0;
 
