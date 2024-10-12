@@ -36,7 +36,7 @@
 #define cstrlen(str) (sizeof(str) / sizeof(str[0]))
 
 static clog_log_level_e g_log_level = CLOG_LEVEL_DEBUG;
-static bool g_append_newline = true;
+static int g_append_newline = true;
 static FILE* g_log_file = NULL;
 static int g_has_registered_atexit = 0;
 
@@ -134,7 +134,6 @@ void clog_logv(clog_log_level_e level, const char* fmt, va_list args) {
     } else {
         sprintf(ansifmt, "\x1b[0;37m[%s%s\x1b[0;37m] [%s] \x1b[0m%s", levelansi, levelstr, timestamp, fmt);
         sprintf(cleanfmt, "[%s] [%s] %s", levelstr, timestamp, fmt);
-
     }
 
     if (level == CLOG_LEVEL_ERROR) {
