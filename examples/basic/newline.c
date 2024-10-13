@@ -1,5 +1,5 @@
 /*
- * CLog Basic Example
+ * CLog Manual Newline Example
  *
  * This file is released into the public domain under CC0:
  *   https://creativecommons.org/publicdomain/zero/1.0/
