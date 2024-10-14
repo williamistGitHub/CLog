@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.5)
 project(
     CLog
     VERSION 0.1.2
@@ -14,7 +14,6 @@ set_target_properties(
     clog PROPERTIES
 
     C_STANDARD 90
-    COMPILE_WARNING_AS_ERROR TRUE
 )
 
 # the fact i have to specify command line arguments here (and compiler specific
