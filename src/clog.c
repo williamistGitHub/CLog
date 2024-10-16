@@ -66,7 +66,7 @@ void clog_set_log_file(const char* filename) {
     g_log_file = fopen(filename, "w");
 
     if (g_log_file == NULL) {
-        clog_log(CLOG_LEVEL_ERROR, "Failed to open '%s'!", filename);
+        clog_log(CLOG_LEVEL_ERROR, "Failed to open '%s'!%s", filename, g_append_newline == 1 ? "" : "\n");
         return;
     }
 
@@ -125,6 +125,9 @@ void clog_logv(clog_log_level_e level, const char* fmt, va_list args) {
             levelansi = "\x1b[1;31m";
             levelstr = "ERROR";
             break;
+        default:
+            clog_log(CLOG_LEVEL_WARN, "Unknown log level %d.%s", level, g_append_newline == 1 ? "" : "\n");
+            return;
     }
 
     if (g_append_newline) {
