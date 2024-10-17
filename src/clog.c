@@ -38,6 +38,7 @@ static int g_append_newline = 1;
 static FILE* g_log_file = NULL;
 static int g_has_registered_atexit = 0;
 static clog_log_callback_t g_log_callback = NULL;
+static int g_log_formatted = 0;
 
 void clog_set_log_level(clog_log_level_e level) {
     g_log_level = level;
@@ -75,8 +76,9 @@ void clog_set_log_file(const char* filename) {
     }
 }
 
-void clog_set_log_callback(clog_log_callback_t callback) {
+void clog_set_log_callback(clog_log_callback_t callback, int useFormatted) {
     g_log_callback = callback;
+    g_log_formatted = useFormatted;
 }
 
 void clog_log(clog_log_level_e level, const char* fmt, ...) {
@@ -105,14 +107,14 @@ void clog_logv(clog_log_level_e level, const char* fmt, va_list args) {
         return;
     }
 
-    if (g_log_callback != NULL) {
+    if (g_log_callback != NULL && !g_log_formatted) {
         /* re-use cleanfmt, dont need more memory for this crap lol */
         printflen = vsnprintf(cleanfmt, MAX_OUT_LEN, fmt, args);
         if (printflen >= 0 && printflen < MAX_OUT_LEN) {
             cleanfmt[printflen] = '\0'; /* null terminate */
         }
 
-        g_log_callback(level, cleanfmt);
+        g_log_callback(level, cleanfmt, printflen);
     }
 
     /* format timestamp */
@@ -147,10 +149,14 @@ void clog_logv(clog_log_level_e level, const char* fmt, va_list args) {
 
     if (g_append_newline) {
         snprintf(ansifmt, MAX_OUT_LEN, "\x1b[0;37m[%s%s\x1b[0;37m] [%s] \x1b[0m%s\n", levelansi, levelstr, timestamp, fmt);
-        snprintf(cleanfmt, MAX_OUT_LEN, "[%s] [%s] %s\n", levelstr, timestamp, fmt);
+        printflen = snprintf(cleanfmt, MAX_OUT_LEN, "[%s] [%s] %s\n", levelstr, timestamp, fmt);
     } else {
         snprintf(ansifmt, MAX_OUT_LEN, "\x1b[0;37m[%s%s\x1b[0;37m] [%s] \x1b[0m%s", levelansi, levelstr, timestamp, fmt);
-        snprintf(cleanfmt, MAX_OUT_LEN, "[%s] [%s] %s", levelstr, timestamp, fmt);
+        printflen = snprintf(cleanfmt, MAX_OUT_LEN, "[%s] [%s] %s", levelstr, timestamp, fmt);
+    }
+
+    if (g_log_callback != NULL && g_log_formatted) {
+        g_log_callback(level, cleanfmt, printflen);
     }
 
     if (level == CLOG_LEVEL_ERROR) {

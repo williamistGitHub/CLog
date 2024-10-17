@@ -8,14 +8,14 @@
 #include "clog/clog.h"
 #include <stdio.h>
 
-void callback(clog_log_level_e level, char* message) {
+void callback(clog_log_level_e level, char* message, size_t messageLen) {
     /* Note that logging here will cause a stack overflow, due do the callback
        itself being called. */
-    printf("Callback called with message: '%s'\n", message);
+    printf("Callback called with message: '%s' (%llu chars long)\n", message, messageLen);
 }
 
 int main(void) {
-    clog_set_log_callback(callback);
+    clog_set_log_callback(callback, 0);
     clog_set_log_level(CLOG_LEVEL_INFO);
 
     clog_log(CLOG_LEVEL_INFO, "Sample log message.");

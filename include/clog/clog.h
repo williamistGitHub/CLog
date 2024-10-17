@@ -37,7 +37,7 @@ typedef enum {
     CLOG_LEVEL_ERROR = 3
 } clog_log_level_e;
 
-typedef void (*clog_log_callback_t)(clog_log_level_e level, char* message);
+typedef void (*clog_log_callback_t)(clog_log_level_e level, char* message, size_t messageLen);
 
 #ifdef __cplusplus
 extern "C" {
@@ -62,13 +62,16 @@ void clog_set_append_newline(int append);
  */
 void clog_set_log_file(const char* filename);
 /**
- * @brief Sets a callback to be called whenever a log message happens. Gets the log level as well as the already formatted log message.
+ * @brief Sets a callback to be called whenever a log message happens. Gets the log level as well as the log message.
  * 
  * Note that logging inside the callback without proper safeguards will cause infinite recursion and a stack overflow.
  * 
+ * Also note that if useFormatted is true the message passed to the callback may or may not contain a newline at the end.
+ * 
  * @param callback The callback to set, or NULL to remove an already set callback.
+ * @param useFormatted Should the callback recieve the fully formatted message (level prefix, timestamp, etc)?
  */
-void clog_set_log_callback(clog_log_callback_t callback);
+void clog_set_log_callback(clog_log_callback_t callback, int useFormatted);
 
 /**
  * @brief Log, using varargs.
