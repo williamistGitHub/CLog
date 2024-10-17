@@ -34,17 +34,17 @@
 #define cstrlen(str) (sizeof(str) / sizeof(str[0]))
 
 static clog_log_level_e g_log_level = CLOG_LEVEL_DEBUG;
-static int g_append_newline = 1;
+static clog_bool_e g_append_newline = CLOG_TRUE;
 static FILE* g_log_file = NULL;
-static int g_has_registered_atexit = 0;
+static clog_bool_e g_has_registered_atexit = CLOG_FALSE;
 static clog_log_callback_t g_log_callback = NULL;
-static int g_log_formatted = 0;
+static clog_bool_e g_log_formatted = CLOG_FALSE;
 
 void clog_set_log_level(clog_log_level_e level) {
     g_log_level = level;
 }
 
-void clog_set_append_newline(int append) {
+void clog_set_append_newline(clog_bool_e append) {
     g_append_newline = append;
 }
 
@@ -67,16 +67,17 @@ void clog_set_log_file(const char* filename) {
     g_log_file = fopen(filename, "w");
 
     if (g_log_file == NULL) {
-        clog_log(CLOG_LEVEL_ERROR, "Failed to open '%s'!%s", filename, g_append_newline == 1 ? "" : "\n");
+        clog_log(CLOG_LEVEL_ERROR, "Failed to open '%s'!%s", filename, g_append_newline == CLOG_TRUE ? "" : "\n");
         return;
     }
 
-    if (!g_has_registered_atexit) {
+    if (g_has_registered_atexit == CLOG_FALSE) {
         atexit(clog_close_log_file);
+        g_has_registered_atexit = CLOG_TRUE;
     }
 }
 
-void clog_set_log_callback(clog_log_callback_t callback, int useFormatted) {
+void clog_set_log_callback(clog_log_callback_t callback, clog_bool_e useFormatted) {
     g_log_callback = callback;
     g_log_formatted = useFormatted;
 }
@@ -107,7 +108,7 @@ void clog_logv(clog_log_level_e level, const char* fmt, va_list args) {
         return;
     }
 
-    if (g_log_callback != NULL && !g_log_formatted) {
+    if (g_log_callback != NULL && g_log_formatted == CLOG_FALSE) {
         /* re-use cleanfmt, dont need more memory for this crap lol */
         printflen = vsnprintf(cleanfmt, MAX_OUT_LEN, fmt, args);
         if (printflen >= 0 && printflen < MAX_OUT_LEN) {
@@ -143,11 +144,11 @@ void clog_logv(clog_log_level_e level, const char* fmt, va_list args) {
             levelstr = "ERROR";
             break;
         default:
-            clog_log(CLOG_LEVEL_WARN, "Unknown log level %d.%s", level, g_append_newline == 1 ? "" : "\n");
+            clog_log(CLOG_LEVEL_WARN, "Unknown log level %d.%s", level, g_append_newline == CLOG_TRUE ? "" : "\n");
             return;
     }
 
-    if (g_append_newline) {
+    if (g_append_newline == CLOG_TRUE) {
         snprintf(ansifmt, MAX_OUT_LEN, "\x1b[0;37m[%s%s\x1b[0;37m] [%s] \x1b[0m%s\n", levelansi, levelstr, timestamp, fmt);
         printflen = snprintf(cleanfmt, MAX_OUT_LEN, "[%s] [%s] %s\n", levelstr, timestamp, fmt);
     } else {
@@ -155,7 +156,7 @@ void clog_logv(clog_log_level_e level, const char* fmt, va_list args) {
         printflen = snprintf(cleanfmt, MAX_OUT_LEN, "[%s] [%s] %s", levelstr, timestamp, fmt);
     }
 
-    if (g_log_callback != NULL && g_log_formatted) {
+    if (g_log_callback != NULL && g_log_formatted == CLOG_TRUE) {
         g_log_callback(level, cleanfmt, printflen);
     }
 

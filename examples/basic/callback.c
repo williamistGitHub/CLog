@@ -15,7 +15,7 @@ void callback(clog_log_level_e level, char* message, int messageLen) {
 }
 
 int main(void) {
-    clog_set_log_callback(callback, 0);
+    clog_set_log_callback(callback, CLOG_FALSE);
     clog_set_log_level(CLOG_LEVEL_INFO);
 
     clog_log(CLOG_LEVEL_INFO, "Sample log message.");
