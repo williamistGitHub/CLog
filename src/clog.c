@@ -37,6 +37,7 @@ static clog_log_level_e g_log_level = CLOG_LEVEL_DEBUG;
 static int g_append_newline = 1;
 static FILE* g_log_file = NULL;
 static int g_has_registered_atexit = 0;
+static clog_log_callback_t g_log_callback = NULL;
 
 void clog_set_log_level(clog_log_level_e level) {
     g_log_level = level;
@@ -74,6 +75,10 @@ void clog_set_log_file(const char* filename) {
     }
 }
 
+void clog_set_log_callback(clog_log_callback_t callback) {
+    g_log_callback = callback;
+}
+
 void clog_log(clog_log_level_e level, const char* fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
@@ -94,8 +99,20 @@ void clog_logv(clog_log_level_e level, const char* fmt, va_list args) {
     const char* levelansi;
     const char* levelstr;
 
+    int printflen;
+
     if (level < g_log_level) {
         return;
+    }
+
+    if (g_log_callback != NULL) {
+        /* re-use cleanfmt, dont need more memory for this crap lol */
+        printflen = vsnprintf(cleanfmt, MAX_OUT_LEN, fmt, args);
+        if (printflen >= 0 && printflen < MAX_OUT_LEN) {
+            cleanfmt[printflen] = '\0'; /* null terminate */
+        }
+
+        g_log_callback(level, cleanfmt);
     }
 
     /* format timestamp */

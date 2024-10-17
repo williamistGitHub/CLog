@@ -37,6 +37,8 @@ typedef enum {
     CLOG_LEVEL_ERROR = 3
 } clog_log_level_e;
 
+typedef void (*clog_log_callback_t)(clog_log_level_e level, char* message);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -59,6 +61,14 @@ void clog_set_append_newline(int append);
  * @param filename New log filename, `NULL` is accepted and means no log file.
  */
 void clog_set_log_file(const char* filename);
+/**
+ * @brief Sets a callback to be called whenever a log message happens. Gets the log level as well as the already formatted log message.
+ * 
+ * Note that logging inside the callback without proper safeguards will cause infinite recursion and a stack overflow.
+ * 
+ * @param callback The callback to set, or NULL to remove an already set callback.
+ */
+void clog_set_log_callback(clog_log_callback_t callback);
 
 /**
  * @brief Log, using varargs.
@@ -87,4 +97,3 @@ void clog_logv(clog_log_level_e level, const char* fmt, va_list args);
 #endif
 
 #endif
-
