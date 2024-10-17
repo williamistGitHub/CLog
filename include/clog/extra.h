@@ -38,6 +38,24 @@ extern "C" {
  */
 #define clog_assert(EX) (void)((EX) || (clog_log(CLOG_LEVEL_ERROR, "ASSERT FAILED: %s at %s, line %d", #EX, __FILE__, __LINE__), exit(1), 0)) /* POSIX says that assert should exit */
 
+/**
+ * @brief Returns a string representation of the log level. The string is not padded with spaces, and ranges in length.
+ * 
+ * Returns "UNKNOWN" for an unknown level.
+ * 
+ * @param level The level to convert.
+ * @return Level string, in all capital letters. Do not free. 
+ */
+inline const char* clog_level_to_str(clog_log_level_e level) {
+    switch (level) {
+        case CLOG_LEVEL_DEBUG: return "DEBUG";
+        case CLOG_LEVEL_INFO: return "INFO";
+        case CLOG_LEVEL_WARN: return "WARN";
+        case CLOG_LEVEL_ERROR: return "ERROR";
+        default: return "UNKNOWN";
+    }
+}
+
 #ifdef __cplusplus
 }
 #endif
