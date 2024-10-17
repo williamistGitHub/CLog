@@ -37,7 +37,7 @@ typedef enum {
     CLOG_LEVEL_ERROR = 3
 } clog_log_level_e;
 
-typedef void (*clog_log_callback_t)(clog_log_level_e level, char* message, size_t messageLen);
+typedef void (*clog_log_callback_t)(clog_log_level_e level, char* message, int messageLen);
 
 #ifdef __cplusplus
 extern "C" {
